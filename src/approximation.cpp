@@ -1,7 +1,7 @@
 //
 // Created by nack2 on 04.06.2025.
 //
-#include "../include/aproximation.h"
+#include "../include/approximation.h"
 
 #include <iostream>
 #include <stdexcept>

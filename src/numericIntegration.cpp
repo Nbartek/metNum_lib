@@ -3,9 +3,14 @@
 //
 #include "../include/numericIntegration.h"
 
-numericIntegration::numericIntegration(int n)
+#include <iostream>
+#include <__msvc_ostream.hpp>
+
+numericIntegration::numericIntegration(int n,std::pair<double,double> intervals,std::function<double(double)>f)
 {
     this->n = n;
+    this->intervals = intervals;
+    this->f = f;
     static  double nodes2[] = { -1/sqrt(3), 1/sqrt(3) };
     static  double weights2[] = { 1.0, 1.0 };
 
@@ -66,7 +71,7 @@ double numericIntegration::hornerPolinolmial(const std::vector<double>& data, do
     return wynik;
 }
 
-double numericIntegration::rectangleMethod()
+double numericIntegration::rectangleMethodPoli(std::vector<double>ai,int n)
 {
     double h = (intervals.second - intervals.first) / n;
     double sum = 0.0;
@@ -79,31 +84,31 @@ double numericIntegration::rectangleMethod()
     return sum * h;
 }
 
-double numericIntegration::rectangleMethod(std::function<double(double)> f, int n)
+double numericIntegration::rectangleMethodFun(int n)
 {
     double h = (intervals.second - intervals.first) / n;
     double sum = 0.0;
 
     for (int i = 0; i < n; i++) {
-        double mid = interval.first + i * h + h / 2.0;
+        double mid = intervals.first + i * h + h / 2.0;
         sum += f( mid);
     }
 
     return sum * h;
 }
 
-double numericIntegration::trapezeMethod(int precision)
+double numericIntegration::trapezeMethodPoli(std::vector<double> ai,int n)
 {
     // liczymy h
-    double h = (interval.second - interval.first) / precision;
+    double h = (intervals.second - intervals.first) / n;
 
     // ONa krancach przedziałów
-    double suma = (hornerPolinolmial(ai, interval.first) + hornerPolinolmial(ai, interval.second)) / 2.0;
+    double suma = (hornerPolinolmial(ai, intervals.first) + hornerPolinolmial(ai, intervals.second)) / 2.0;
 
     // wewnątrz
-    for (int i = 1; i < precision; i++) {
+    for (int i = 1; i < n; i++) {
         //liczymy xi
-        double xi = interval.first + i * h;
+        double xi = intervals.first + i * h;
         suma += hornerPolinolmial(ai, xi);
     }
 
@@ -111,17 +116,17 @@ double numericIntegration::trapezeMethod(int precision)
     return suma * h;
 }
 
-double numericIntegration::trapezeMethod(std::function<double(double)> f, int precision)
+double numericIntegration::trapezeMethodFun( int n)
 {
-    double h = (interval.second - interval.first) / precision;
+    double h = (intervals.second - intervals.first) / n;
 
     // ONa krancach przedziałów
-    double suma = (f(interval.first)+ f( interval.second)) / 2.0;
+    double suma = (f(intervals.first)+ f( intervals.second)) / 2.0;
 
     // wewnątrz
-    for (int i = 1; i < precision; i++) {
+    for (int i = 1; i < n; i++) {
         //liczymy xi
-        double xi = interval.first + i * h;
+        double xi = intervals.first + i * h;
         suma += f(xi);
     }
 
@@ -129,18 +134,18 @@ double numericIntegration::trapezeMethod(std::function<double(double)> f, int pr
     return suma * h;
 }
 
-double numericIntegration::simpsonMethod(int n)
+double numericIntegration::simpsonMethodPoli(std::vector<double> ai,int n)
 {
     if (n % 2 != 0) {
         std::cerr << "Liczba kroków (n) musi być parzysta dla metody Simpsona!" << std::endl;
         return 0.0;
     }
 
-    double h = (interval.second - interval.first) / n;
-    double suma = hornerPolinolmial(ai, interval.first) + hornerPolinolmial(ai, interval.second);
+    double h = (intervals.second - intervals.first) / n;
+    double suma = hornerPolinolmial(ai, intervals.first) + hornerPolinolmial(ai, intervals.second);
 
     for (int i = 1; i < n; i++) {
-        double xi = interval.first + i * h;
+        double xi = intervals.first + i * h;
         double fx = hornerPolinolmial(ai, xi);
 
         if (i % 2 == 0) {
@@ -153,18 +158,18 @@ double numericIntegration::simpsonMethod(int n)
     return (h / 3.0) * suma;
 }
 
-double numericIntegration::simpsonMethod(std::function<double(double)> f, int n)
+double numericIntegration::simpsonMethodFun( int n)
 {
     if (n % 2 != 0) {
         std::cerr << "Liczba kroków (n) musi być parzysta dla metody Simpsona!" << std::endl;
         return 0.0;
     }
 
-    double h = (interval.second - interval.first) / n;
-    double suma = f(interval.first) + f( interval.second);
+    double h = (intervals.second - intervals.first) / n;
+    double suma = f(intervals.first) + f( intervals.second);
 
     for (int i = 1; i < n; i++) {
-        double xi = interval.first + i * h;
+        double xi = intervals.first + i * h;
         double fx = f(xi);
 
         if (i % 2 == 0) {

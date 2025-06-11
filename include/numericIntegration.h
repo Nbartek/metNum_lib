@@ -25,15 +25,15 @@ class numericIntegration
     {
         this->intervals = intervals;
     }
-    numericIntegration(int n);
-    double gaussLegendre(int n, int precison);
+    numericIntegration(int n, std::pair<double,double> intervals,std::function<double(double)>f);
+    double gaussLegendre(int precison);
     double hornerPolinolmial(const std::vector<double>& data, double x);
-    double rectangleMethod( int n);
-    double rectangleMethod( int n);
-    double trapezeMethod(int precision);
-    double trapezeMethod(std::function<double(double)> f,int precision);
-    double simpsonMethod( int n);
-    double simpsonMethod(std::function<double(double)>f, int n);
+    double rectangleMethodPoli(std::vector<double>, int n);
+    double rectangleMethodFun( int n);
+    double trapezeMethodPoli(std::vector<double>,int n);
+    double trapezeMethodFun(int n);
+    double simpsonMethodPoli(std::vector<double>, int n);
+    double simpsonMethodFun( int n);
 
 };
 #endif //NUMERICINTEGRATION_H
