@@ -13,19 +13,13 @@ class Approximation
      double* weights;
     static const int MAXN = 100;
     int N = 0;
-
-    struct fun
-    {
-        std::function<double(double )> f;
-        std::pair<double,double> intervals;
-    };
-    public:
-    Approximation(int n);
-    double gaussLegendre(fun f, int n, int precison);
     static void partial_pivot(double A[MAXN][MAXN + 1], int n);
     void back_substitute(double A[MAXN][MAXN + 1], int n, double x[MAXN]);
+    public:
+    Approximation(int n);
+    double gaussLegendre(std::function<double(double)>f,std::pair<double,double>intervals, int n, int precison);
     std::vector<double> gaussEliminationSolve(double mat[MAXN][MAXN + 1], int n);
-    std::vector<double> approx(fun f, int degree, int gaussPoints = 3, int precision = 10);
+    std::vector<double> approx(std::function<double(double)>f,std::pair<double,double>intervals, int degree, int gaussPoints = 3, int precision = 10);
     double evaluateApprox(const std::vector<double>& coeffs, double x);
 
 

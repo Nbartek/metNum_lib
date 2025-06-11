@@ -3,7 +3,7 @@
 #include "include/approximation.h"
 #include "include/interpolation.h"
 #include "include/differentialEquation.h"
-#include "include/nonLinearEquation.h"
+#include "include/nonLinearSolver.h"
 #include "include/linearEquation.h"
 #include "include/numericIntegration.h"
 

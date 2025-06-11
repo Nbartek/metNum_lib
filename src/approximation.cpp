@@ -42,18 +42,18 @@ Approximation::Approximation(int n)
     }
 }
 
-double Approximation::gaussLegendre(fun f, int n, int precison)
+double Approximation::gaussLegendre(std::function<double(double)>f,std::pair<double,double>intervals, int n, int precison)
 {
 
     double result = 0.0;
-    double h = (f.intervals.second - f.intervals.first) / precison;
+    double h = (intervals.second - intervals.first) / precison;
     for (int j = 0; j < precison; ++j)
     {
-        double aj = f.intervals.first+j*h;
+        double aj = intervals.first+j*h;
         double bj = aj+h;
         for (int i = 0; i < n; ++i) {
             double xi = ((bj - aj) / 2.0) * nodes[i] + (aj + bj) / 2.0;
-            result += weights[i] * f.f(xi);
+            result += weights[i] * f(xi);
         }
     }
     result *= h / 2.0;
@@ -117,27 +117,28 @@ std::vector<double> Approximation::gaussEliminationSolve(double mat[100][101], i
     return result;
 }
 
-std::vector<double> Approximation::approx(fun f, int degree, int gaussPoints, int precision)
+std::vector<double> Approximation::approx(std::function<double(double)>f,std::pair<double,double>intervals, int degree, int gaussPoints, int precision)
 {
     N = degree + 1;
     double A[MAXN][MAXN + 1] = {0};
 
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
-            fun integrand;
-            integrand.f = [i, j](double x) {
+            std::pair<double,double> integrandInter;
+            std::function<double(double)> integrandFun = [i, j](double x)
+            {
                 return std::pow(x, i) * std::pow(x, j);
             };
-            integrand.intervals = f.intervals;
-            A[i][j] = gaussLegendre(integrand, gaussPoints, precision);
+            integrandInter = intervals;
+            A[i][j] = gaussLegendre(integrandFun,integrandInter, gaussPoints, precision);
         }
 
-        fun b_integrand;
-        b_integrand.f = [i, &f](double x) {
-            return f.f(x) * std::pow(x, i);
+        std::pair<double,double> b_integrandInter;
+        std::function<double(double)> b_integrandFun = [i, &f](double x) {
+            return f(x) * std::pow(x, i);
         };
-        b_integrand.intervals = f.intervals;
-        A[i][N] = gaussLegendre(b_integrand, gaussPoints, precision);
+        b_integrandInter = intervals;
+        A[i][N] = gaussLegendre(b_integrandFun,b_integrandInter, gaussPoints, precision);
     }
 
     return gaussEliminationSolve(A, N);

@@ -4,7 +4,6 @@
 #include "../include/numericIntegration.h"
 
 #include <iostream>
-#include <__msvc_ostream.hpp>
 
 numericIntegration::numericIntegration(int n,std::pair<double,double> intervals,std::function<double(double)>f)
 {

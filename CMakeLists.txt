@@ -8,7 +8,7 @@ add_library(metNum_lib STATIC library.cpp
         include/linearEquation.h
         include/approximation.h
         include/numericIntegration.h
-        include/nonLinearEquation.h
+        include/nonLinearSolver.h
         include/differentialEquation.h
         src/approximation.cpp
         examples/exampleNumericIntegration.cpp

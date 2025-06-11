@@ -1,26 +1,63 @@
-//
-// Created by nack2 on 04.06.2025.
-//
-
 #ifndef LINEAREQUATION_H
 #define LINEAREQUATION_H
-#include <string>
 
-class LinearEquation
-{
-    int N = NAN;
-    static const int NMAX = 100;
-    static int P[NMAX];
-    public:
-    void print(double mat[NMAX][NMAX + 1]);
-    static void load_data_matrix(const std::string& filename,double result[NMAX][NMAX+1] );
-    void partial_pivot(double A[NMAX][NMAX + 1], int n);
-    void back_substitute(double A[NMAX][NMAX + 1], int n, double x[NMAX]);
-    void backwardSubstitution(double U[NMAX][NMAX], double y[NMAX], double x[NMAX]);
-    void forwardSubstitution(double L[NMAX][NMAX], double b[NMAX], double y[NMAX]);
-    void test(double A[NMAX][NMAX], double x[NMAX]);
-    void luDecomposition(double A[NMAX][NMAX], double L[NMAX][NMAX], double U[NMAX][NMAX]);
-    void gaussElimination(double mat[NMAX][NMAX+1]);
-    void luMethod(std::string fileName,bool zShow, bool doTest, bool noShowMatrix);
+#include <vector>
+#include <string>
+#include <optional>
+#include <utility>
+
+/**
+ * A static utility class for solving systems of linear equations of the form Ax = b.
+ */
+class LinearEquation {
+public:
+    // --- Type Aliases for clarity ---
+    using Matrix = std::vector<std::vector<double>>;
+    using Vector = std::vector<double>;
+
+    /**
+     * Loads a linear system from a file.
+     * The file format must be:
+     * size: N
+     * b: b0 b1 ... bN-1
+     * A_row0: a00 a01 ... a0N-1
+     * A_row1: a10 a11 ... a1N-1
+     * ...
+     * @param filename The path to the data file.
+     * @return A pair containing the matrix A and the vector b.
+     * @throws std::runtime_error if the file cannot be opened or is malformed.
+     */
+    static std::pair<Matrix, Vector> loadSystemFromFile(const std::string& filename);
+
+    /**
+     * Solves the system Ax = b using Gaussian elimination with partial pivoting.
+     * @param A The coefficient matrix.
+     * @param b The constant vector.
+     * @return An optional containing the solution vector x if a unique solution exists,
+     *         otherwise std::nullopt.
+     */
+    static std::optional<Vector> solveWithGaussianElimination(Matrix A, Vector b);
+
+    /**
+     * Solves the system Ax = b using LU decomposition with partial pivoting.
+     * @param A The coefficient matrix.
+     * @param b The constant vector.
+     * @return An optional containing the solution vector x if a unique solution exists,
+     *         otherwise std::nullopt.
+     */
+    static std::optional<Vector> solveWithLU(const Matrix& A, const Vector& b);
+
+private:
+    // Private struct to hold the results of LU decomposition
+    struct LUResult {
+        Matrix L;
+        Matrix U;
+        std::vector<int> P; // Permutation vector for pivoting
+    };
+
+    static std::optional<LUResult> luDecomposition(const Matrix& A);
+    static Vector forwardSubstitution(const Matrix& L, const Vector& b);
+    static Vector backwardSubstitution(const Matrix& U, const Vector& y);
 };
+
 #endif //LINEAREQUATION_H
